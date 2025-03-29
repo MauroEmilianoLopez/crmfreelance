@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facturas - CRM Freelance</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">CRM Freelance</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/"><i class="bi bi-house-door"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/clientes"><i class="bi bi-people"></i> Clientes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/proyectos"><i class="bi bi-briefcase"></i> Proyectos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/facturas"><i class="bi bi-receipt"></i> Facturas</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="cerrarSesion"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-receipt"></i> Facturas</h2>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#facturaModal">
+                <i class="bi bi-plus-circle"></i> Nueva Factura
+            </button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Número</th>
+                        <th>Cliente</th>
+                        <th>Proyecto</th>
+                        <th>Fecha</th>
+                        <th>Vencimiento</th>
+                        <th>Total</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="facturasTableBody">
+                    <!-- Las facturas se cargarán aquí dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal de Factura -->
+    <div class="modal fade" id="facturaModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Nueva Factura</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="facturaForm">
+                        <input type="hidden" id="facturaId">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="cliente" class="form-label">Cliente</label>
+                                <select class="form-select" id="cliente" required>
+                                    <!-- Los clientes se cargarán dinámicamente -->
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="proyecto" class="form-label">Proyecto (Opcional)</label>
+                                <select class="form-select" id="proyecto">
+                                    <option value="">Seleccionar proyecto</option>
+                                    <!-- Los proyectos se cargarán dinámicamente -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="fecha" class="form-label">Fecha de Emisión</label>
+                                <input type="date" class="form-control" id="fecha" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="fechaVencimiento" class="form-label">Fecha de Vencimiento</label>
+                                <input type="date" class="form-control" id="fechaVencimiento" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Items</label>
+                            <div id="itemsContainer">
+                                <!-- Los items se agregarán aquí dinámicamente -->
+                            </div>
+                            <button type="button" class="btn btn-secondary mt-2" id="agregarItem">
+                                <i class="bi bi-plus-circle"></i> Agregar Item
+                            </button>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="subtotal" class="form-label">Subtotal</label>
+                                <input type="number" class="form-control" id="subtotal" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="impuestos" class="form-label">Impuestos (%)</label>
+                                <input type="number" class="form-control" id="impuestos" value="0">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="total" class="form-label">Total</label>
+                                <input type="number" class="form-control" id="total" readonly>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="estado" class="form-label">Estado</label>
+                            <select class="form-select" id="estado" required>
+                                <option value="pendiente">Pendiente</option>
+                                <option value="pagada">Pagada</option>
+                                <option value="vencida">Vencida</option>
+                                <option value="cancelada">Cancelada</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="guardarFactura">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Template para items de factura -->
+    <template id="itemTemplate">
+        <div class="item-row border rounded p-3 mb-2">
+            <div class="row">
+                <div class="col-md-5 mb-2">
+                    <label class="form-label">Descripción</label>
+                    <input type="text" class="form-control descripcion" required>
+                </div>
+                <div class="col-md-2 mb-2">
+                    <label class="form-label">Cantidad</label>
+                    <input type="number" class="form-control cantidad" value="1" min="1" required>
+                </div>
+                <div class="col-md-2 mb-2">
+                    <label class="form-label">Precio</label>
+                    <input type="number" class="form-control precio" required>
+                </div>
+                <div class="col-md-2 mb-2">
+                    <label class="form-label">Subtotal</label>
+                    <input type="number" class="form-control subtotal" readonly>
+                </div>
+                <div class="col-md-1 mb-2 d-flex align-items-end">
+                    <button type="button" class="btn btn-danger eliminar-item">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/facturas.js"></script>
+</body>
+</html> 

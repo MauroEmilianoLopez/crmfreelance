@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const Usuario = require('../models/Usuario');
 
 // Ruta de registro
-router.post('/api/auth/registro', async (req, res) => {
+router.post('/registro', async (req, res) => {
     try {
         const { nombre, email, password } = req.body;
 
@@ -41,12 +41,13 @@ router.post('/api/auth/registro', async (req, res) => {
             }
         });
     } catch (error) {
+        console.error('Error en registro:', error);
         res.status(500).json({ mensaje: 'Error al registrar usuario', error: error.message });
     }
 });
 
 // Ruta de login
-router.post('/api/auth/login', async (req, res) => {
+router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -80,7 +81,38 @@ router.post('/api/auth/login', async (req, res) => {
             }
         });
     } catch (error) {
+        console.error('Error en login:', error);
         res.status(500).json({ mensaje: 'Error al iniciar sesión', error: error.message });
+    }
+});
+
+// Ruta para verificar token
+router.get('/verificar', async (req, res) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ mensaje: 'No hay token' });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const usuario = await Usuario.findById(decoded.id).select('-password');
+        
+        if (!usuario) {
+            return res.status(401).json({ mensaje: 'Usuario no encontrado' });
+        }
+
+        res.json({
+            mensaje: 'Token válido',
+            usuario: {
+                id: usuario._id,
+                nombre: usuario.nombre,
+                email: usuario.email,
+                rol: usuario.rol
+            }
+        });
+    } catch (error) {
+        console.error('Error en verificación de token:', error);
+        res.status(401).json({ mensaje: 'Token inválido' });
     }
 });
 

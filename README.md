@@ -1,119 +1,27 @@
-# CRM Freelance
+# CRM para Freelancers
 
-[English](#english) | [Español](#español)
+Sistema de gestión de relaciones con clientes (CRM) diseñado específicamente para freelancers y profesionales independientes.
 
-## English
+## Características
 
-### Description
-CRM Freelance is a comprehensive Customer Relationship Management system designed specifically for freelancers. It helps manage clients, projects, and invoices in an efficient and organized way.
-
-### Features
-- 🔐 Secure authentication system
-- 👥 Client management
-- 📊 Project tracking
-- 💰 Invoice generation and management
-- 📈 Dashboard with key metrics
-- 🔄 Real-time updates
-- 📱 Responsive design
-
-### Technologies Used
-- Frontend:
-  - HTML5
-  - CSS3
-  - JavaScript (Vanilla)
-  - Bootstrap 5
-  - Bootstrap Icons
-- Backend:
-  - Node.js
-  - Express.js
-  - MongoDB
-  - JWT Authentication
-
-### Installation
-
-1. Clone the repository:
-```bash
-git clone https://github.com/your-username/crm-freelance.git
-cd crm-freelance
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Create a `.env` file in the root directory with the following variables:
-```env
-PORT=3000
-MONGODB_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-JWT_EXPIRES_IN=24h
-NODE_ENV=development
-```
-
-4. Start the development server:
-```bash
-npm run dev
-```
-
-### API Documentation
-
-#### Authentication Endpoints
-- `POST /api/auth/registro` - Register a new user
-- `POST /api/auth/login` - User login
-
-#### Client Endpoints
-- `GET /api/clientes` - Get all clients
-- `POST /api/clientes` - Create new client
-- `PUT /api/clientes/:id` - Update client
-- `DELETE /api/clientes/:id` - Delete client
-
-#### Project Endpoints
-- `GET /api/proyectos` - Get all projects
-- `POST /api/proyectos` - Create new project
-- `PUT /api/proyectos/:id` - Update project
-- `DELETE /api/proyectos/:id` - Delete project
-
-#### Invoice Endpoints
-- `GET /api/facturas` - Get all invoices
-- `POST /api/facturas` - Create new invoice
-- `PUT /api/facturas/:id` - Update invoice
-- `DELETE /api/facturas/:id` - Delete invoice
-
----
-
-## Español
-
-### Descripción
-CRM Freelance es un sistema integral de Gestión de Relaciones con Clientes diseñado específicamente para profesionales independientes. Ayuda a gestionar clientes, proyectos y facturas de manera eficiente y organizada.
-
-### Características
-- 🔐 Sistema de autenticación seguro
-- 👥 Gestión de clientes
-- 📊 Seguimiento de proyectos
-- 💰 Generación y gestión de facturas
-- 📈 Panel de control con métricas clave
-- 🔄 Actualizaciones en tiempo real
+- 👤 Gestión de clientes
+- 📊 Gestión de proyectos
+- 💰 Facturación
+- 🔐 Sistema de autenticación
 - 📱 Diseño responsive
+- 📈 Dashboard con métricas clave
 
-### Tecnologías Utilizadas
-- Frontend:
-  - HTML5
-  - CSS3
-  - JavaScript (Vanilla)
-  - Bootstrap 5
-  - Bootstrap Icons
-- Backend:
-  - Node.js
-  - Express.js
-  - MongoDB
-  - Autenticación JWT
+## Requisitos
 
-### Instalación
+- Node.js (v14 o superior)
+- MongoDB
+- npm o yarn
+
+## Instalación
 
 1. Clonar el repositorio:
 ```bash
-git clone https://github.com/your-username/crm-freelance.git
+git clone https://github.com/tu-usuario/crm-freelance.git
 cd crm-freelance
 ```
 
@@ -122,40 +30,150 @@ cd crm-freelance
 npm install
 ```
 
-3. Crear un archivo `.env` en el directorio raíz con las siguientes variables:
+3. Crear archivo `.env` en la raíz del proyecto:
 ```env
 PORT=3000
-MONGODB_URI=tu_cadena_de_conexion_mongodb
-JWT_SECRET=tu_secreto_jwt
+MONGODB_URI=tu_url_de_mongodb
+JWT_SECRET=tu_clave_secreta
 JWT_EXPIRES_IN=24h
 NODE_ENV=development
 ```
 
-4. Iniciar el servidor de desarrollo:
+4. Iniciar el servidor:
 ```bash
 npm run dev
 ```
 
-### Documentación de la API
+## Estructura del Proyecto
 
-#### Endpoints de Autenticación
-- `POST /api/auth/registro` - Registrar nuevo usuario
-- `POST /api/auth/login` - Iniciar sesión
+```
+├── public/             # Archivos estáticos
+│   ├── css/           # Estilos
+│   ├── js/            # JavaScript del cliente
+│   └── *.html         # Páginas HTML
+├── routes/            # Rutas de la API
+├── models/            # Modelos de MongoDB
+├── middleware/        # Middleware personalizado
+├── server.js         # Punto de entrada
+└── package.json      # Dependencias y scripts
+```
 
-#### Endpoints de Clientes
+## API Endpoints
+
+### Autenticación
+- `POST /api/auth/registro` - Registro de usuario
+- `POST /api/auth/login` - Inicio de sesión
+
+### Clientes
 - `GET /api/clientes` - Obtener todos los clientes
+- `GET /api/clientes/:id` - Obtener un cliente específico
 - `POST /api/clientes` - Crear nuevo cliente
 - `PUT /api/clientes/:id` - Actualizar cliente
 - `DELETE /api/clientes/:id` - Eliminar cliente
 
-#### Endpoints de Proyectos
+### Proyectos
 - `GET /api/proyectos` - Obtener todos los proyectos
+- `GET /api/proyectos/:id` - Obtener un proyecto específico
 - `POST /api/proyectos` - Crear nuevo proyecto
 - `PUT /api/proyectos/:id` - Actualizar proyecto
 - `DELETE /api/proyectos/:id` - Eliminar proyecto
 
-#### Endpoints de Facturas
+### Facturas
 - `GET /api/facturas` - Obtener todas las facturas
+- `GET /api/facturas/:id` - Obtener una factura específica
 - `POST /api/facturas` - Crear nueva factura
 - `PUT /api/facturas/:id` - Actualizar factura
-- `DELETE /api/facturas/:id` - Eliminar factura 
+- `DELETE /api/facturas/:id` - Eliminar factura
+
+## Modelos de Datos
+
+### Usuario
+```javascript
+{
+    nombre: String,
+    email: String,
+    password: String,
+    fechaCreacion: Date
+}
+```
+
+### Cliente
+```javascript
+{
+    nombre: String,
+    email: String,
+    telefono: String,
+    empresa: String,
+    direccion: String,
+    estado: String,
+    notas: String,
+    creadoPor: ObjectId,
+    fechaCreacion: Date
+}
+```
+
+### Proyecto
+```javascript
+{
+    nombre: String,
+    descripcion: String,
+    cliente: ObjectId,
+    estado: String,
+    fechaInicio: Date,
+    fechaFin: Date,
+    presupuesto: Number,
+    notas: String,
+    creadoPor: ObjectId,
+    fechaCreacion: Date
+}
+```
+
+### Factura
+```javascript
+{
+    numero: String,
+    cliente: ObjectId,
+    proyecto: ObjectId,
+    fecha: Date,
+    fechaVencimiento: Date,
+    items: [{
+        descripcion: String,
+        cantidad: Number,
+        precioUnitario: Number
+    }],
+    subtotal: Number,
+    impuestos: Number,
+    total: Number,
+    estado: String,
+    notas: String,
+    creadoPor: ObjectId,
+    fechaCreacion: Date
+}
+```
+
+## Seguridad
+
+- Autenticación mediante JWT (JSON Web Tokens)
+- Middleware de autenticación para proteger rutas
+- Encriptación de contraseñas con bcrypt
+- Validación de datos en el servidor
+- Protección contra XSS y CSRF
+- Sanitización de entradas de usuario
+
+## Scripts Disponibles
+
+- `npm run dev` - Inicia el servidor en modo desarrollo con nodemon
+- `npm start` - Inicia el servidor en modo producción
+- `npm test` - Ejecuta las pruebas (si están configuradas)
+
+## Contribución
+
+1. Fork el proyecto
+2. Crea tu rama de características (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+## Licencia
+
+Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE.md](LICENSE.md) para más detalles. 

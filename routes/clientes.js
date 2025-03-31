@@ -4,7 +4,7 @@ const Cliente = require('../models/Cliente');
 const auth = require('../middleware/auth');
 
 // Obtener todos los clientes
-router.get('/clientes', auth, async (req, res) => {
+router.get('/', auth, async (req, res) => {
     try {
         const clientes = await Cliente.find({ creadoPor: req.usuario._id })
             .sort({ fechaCreacion: -1 });
@@ -15,7 +15,7 @@ router.get('/clientes', auth, async (req, res) => {
 });
 
 // Obtener un cliente específico
-router.get('/clientes/:id', auth, async (req, res) => {
+router.get('/:id', auth, async (req, res) => {
     try {
         const cliente = await Cliente.findOne({
             _id: req.params.id,
@@ -33,7 +33,7 @@ router.get('/clientes/:id', auth, async (req, res) => {
 });
 
 // Crear un nuevo cliente
-router.post('/clientes', auth, async (req, res) => {
+router.post('/', auth, async (req, res) => {
     try {
         const cliente = new Cliente({
             ...req.body,
@@ -48,7 +48,7 @@ router.post('/clientes', auth, async (req, res) => {
 });
 
 // Actualizar un cliente
-router.put('/clientes/:id', auth, async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
     try {
         const cliente = await Cliente.findOneAndUpdate(
             { _id: req.params.id, creadoPor: req.usuario._id },
@@ -67,7 +67,7 @@ router.put('/clientes/:id', auth, async (req, res) => {
 });
 
 // Eliminar un cliente
-router.delete('/clientes/:id', auth, async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
     try {
         const cliente = await Cliente.findOneAndDelete({
             _id: req.params.id,

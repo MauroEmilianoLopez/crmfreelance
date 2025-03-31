@@ -4,7 +4,7 @@ const Proyecto = require('../models/Proyecto');
 const auth = require('../middleware/auth');
 
 // Obtener todos los proyectos
-router.get('/proyectos', auth, async (req, res) => {
+router.get('/', auth, async (req, res) => {
     try {
         const proyectos = await Proyecto.find({ creadoPor: req.usuario._id })
             .populate('cliente', 'nombre')
@@ -16,7 +16,7 @@ router.get('/proyectos', auth, async (req, res) => {
 });
 
 // Obtener un proyecto específico
-router.get('/proyectos/:id', auth, async (req, res) => {
+router.get('/:id', auth, async (req, res) => {
     try {
         const proyecto = await Proyecto.findOne({
             _id: req.params.id,
@@ -34,7 +34,7 @@ router.get('/proyectos/:id', auth, async (req, res) => {
 });
 
 // Crear un nuevo proyecto
-router.post('/proyectos', auth, async (req, res) => {
+router.post('/', auth, async (req, res) => {
     try {
         const proyecto = new Proyecto({
             ...req.body,
@@ -49,7 +49,7 @@ router.post('/proyectos', auth, async (req, res) => {
 });
 
 // Actualizar un proyecto
-router.put('/proyectos/:id', auth, async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
     try {
         const proyecto = await Proyecto.findOneAndUpdate(
             { _id: req.params.id, creadoPor: req.usuario._id },
@@ -68,7 +68,7 @@ router.put('/proyectos/:id', auth, async (req, res) => {
 });
 
 // Eliminar un proyecto
-router.delete('/proyectos/:id', auth, async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
     try {
         const proyecto = await Proyecto.findOneAndDelete({
             _id: req.params.id,

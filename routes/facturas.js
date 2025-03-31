@@ -4,7 +4,7 @@ const Factura = require('../models/Factura');
 const auth = require('../middleware/auth');
 
 // Obtener todas las facturas
-router.get('/facturas', auth, async (req, res) => {
+router.get('/', auth, async (req, res) => {
     try {
         const facturas = await Factura.find({ creadoPor: req.usuario._id })
             .populate('cliente', 'nombre')
@@ -17,7 +17,7 @@ router.get('/facturas', auth, async (req, res) => {
 });
 
 // Obtener una factura específica
-router.get('/facturas/:id', auth, async (req, res) => {
+router.get('/:id', auth, async (req, res) => {
     try {
         const factura = await Factura.findOne({
             _id: req.params.id,
@@ -37,7 +37,7 @@ router.get('/facturas/:id', auth, async (req, res) => {
 });
 
 // Crear una nueva factura
-router.post('/facturas', auth, async (req, res) => {
+router.post('/', auth, async (req, res) => {
     try {
         // Generar número de factura único
         const ultimaFactura = await Factura.findOne({ creadoPor: req.usuario._id })
@@ -62,7 +62,7 @@ router.post('/facturas', auth, async (req, res) => {
 });
 
 // Actualizar una factura
-router.put('/facturas/:id', auth, async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
     try {
         const factura = await Factura.findOneAndUpdate(
             { _id: req.params.id, creadoPor: req.usuario._id },
@@ -83,7 +83,7 @@ router.put('/facturas/:id', auth, async (req, res) => {
 });
 
 // Eliminar una factura
-router.delete('/facturas/:id', auth, async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
     try {
         const factura = await Factura.findOneAndDelete({
             _id: req.params.id,

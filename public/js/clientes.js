@@ -2,13 +2,9 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Iniciando carga de página de clientes...');
     
     // Verificar autenticación
-    const token = localStorage.getItem('token');
-    if (!token) {
-        console.log('No hay token, redirigiendo a login...');
-        window.location.href = '/login';
+    if (!window.auth.verificarAutenticacion()) {
         return;
     }
-    console.log('Token presente, continuando...');
 
     // Elementos del DOM
     const clientesTableBody = document.getElementById('clientesTableBody');
@@ -24,31 +20,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const cargarClientes = async () => {
         try {
             console.log('Iniciando carga de clientes...');
-            const response = await fetch('/api/clientes', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            console.log('Respuesta del servidor:', response.status);
-            
-            if (!response.ok) {
-                if (response.status === 401) {
-                    // Token inválido o expirado
-                    localStorage.removeItem('token');
-                    window.location.href = '/login';
-                    return;
-                }
-                const errorData = await response.json();
-                throw new Error(errorData.mensaje || 'Error al cargar clientes');
-            }
-
+            const response = await window.auth.peticionAutenticada('/api/clientes');
             const clientes = await response.json();
             console.log('Clientes cargados:', clientes.length);
             mostrarClientes(clientes);
         } catch (error) {
             console.error('Error al cargar clientes:', error);
-            mostrarMensaje('Error al cargar los clientes', 'error');
+            if (error.message !== 'No autorizado') {
+                mostrarMensaje('Error al cargar los clientes: ' + error.message, 'error');
+            }
         }
     };
 
@@ -73,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${cliente.empresa || '-'}</td>
                 <td>
                     <span class="badge bg-${getEstadoColor(cliente.estado)}">
-                        ${cliente.estado}
+                        ${formatearEstado(cliente.estado)}
                     </span>
                 </td>
                 <td>
@@ -89,9 +69,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    // Formatear estado
+    const formatearEstado = (estado) => {
+        return estado.charAt(0).toUpperCase() + estado.slice(1);
+    };
+
     // Obtener color del estado
     const getEstadoColor = (estado) => {
-        switch (estado) {
+        switch (estado.toLowerCase()) {
             case 'activo': return 'success';
             case 'inactivo': return 'danger';
             case 'prospecto': return 'warning';
@@ -101,7 +86,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Mostrar mensaje
     const mostrarMensaje = (mensaje, tipo) => {
-        alert(mensaje); // Puedes mejorar esto usando un sistema de notificaciones más elegante
+        // Aquí podrías implementar un sistema de notificaciones más elegante
+        // Por ahora usamos alert pero podrías usar toastr, sweetalert2, etc.
+        if (tipo === 'error') {
+            console.error(mensaje);
+        }
+        alert(mensaje);
     };
 
     // Limpiar formulario
@@ -147,11 +137,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             console.log('Enviando solicitud:', { url, method, clienteData });
 
-            const response = await fetch(url, {
+            const response = await window.auth.peticionAutenticada(url, {
                 method,
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(clienteData)
             });
@@ -159,71 +148,57 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             console.log('Respuesta del servidor:', data);
 
-            if (!response.ok) {
-                throw new Error(data.mensaje || 'Error al guardar cliente');
-            }
-
             clienteModal.hide();
             limpiarFormulario();
             cargarClientes();
-            mostrarMensaje(clienteId ? 'Cliente actualizado' : 'Cliente creado', 'success');
+            mostrarMensaje(clienteId ? 'Cliente actualizado exitosamente' : 'Cliente creado exitosamente', 'success');
         } catch (error) {
             console.error('Error al guardar cliente:', error);
-            mostrarMensaje('Error al guardar el cliente', 'error');
+            if (error.message !== 'No autorizado') {
+                mostrarMensaje('Error al guardar el cliente: ' + error.message, 'error');
+            }
         }
     };
 
     // Event Listeners
     guardarClienteBtn.addEventListener('click', guardarCliente);
-
     document.getElementById('clienteModal').addEventListener('hidden.bs.modal', limpiarFormulario);
 
     // Funciones globales para los botones de la tabla
     window.editarCliente = async (id) => {
         try {
             console.log('Cargando cliente para editar:', id);
-            const response = await fetch(`/api/clientes/${id}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.mensaje || 'Error al cargar cliente');
-            }
-
+            const response = await window.auth.peticionAutenticada(`/api/clientes/${id}`);
             const cliente = await response.json();
             cargarClienteEnFormulario(cliente);
             clienteModal.show();
         } catch (error) {
             console.error('Error al cargar cliente:', error);
-            mostrarMensaje('Error al cargar el cliente', 'error');
+            if (error.message !== 'No autorizado') {
+                mostrarMensaje('Error al cargar el cliente: ' + error.message, 'error');
+            }
         }
     };
 
     window.eliminarCliente = async (id) => {
-        if (!confirm('¿Estás seguro de que deseas eliminar este cliente?')) return;
+        if (!confirm('¿Estás seguro de que deseas eliminar este cliente?')) {
+            return;
+        }
 
         try {
             console.log('Eliminando cliente:', id);
-            const response = await fetch(`/api/clientes/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+            const response = await window.auth.peticionAutenticada(`/api/clientes/${id}`, {
+                method: 'DELETE'
             });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.mensaje || 'Error al eliminar cliente');
-            }
-
+            const data = await response.json();
+            console.log('Respuesta del servidor:', data);
             cargarClientes();
-            mostrarMensaje('Cliente eliminado', 'success');
+            mostrarMensaje('Cliente eliminado exitosamente', 'success');
         } catch (error) {
             console.error('Error al eliminar cliente:', error);
-            mostrarMensaje('Error al eliminar el cliente', 'error');
+            if (error.message !== 'No autorizado') {
+                mostrarMensaje('Error al eliminar el cliente: ' + error.message, 'error');
+            }
         }
     };
 
